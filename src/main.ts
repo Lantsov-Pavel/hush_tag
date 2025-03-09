@@ -13,25 +13,24 @@ const deployerKey = deployerAccount.key;
 const senderAccount = Local.testAccounts[1];
 const senderKey = senderAccount.key;
 // ----------------------------------------------------
-await generateTicket();
+// await generateTicket();
 
-const imgFilePath = path.format({
-  dir: 'img',
-  name: 'B62qqL47z8LL1tALQEEqhpvDJrH8nV1NVTefvKUxqE7rdi6mmACmc8C',
-  // name: zkAppAddressStr,
-  ext: '.bmp'
-});
-const readStatus = await validateTicket(imgFilePath);
-console.log(readStatus);
+// const imgFilePath = path.format({
+//   dir: 'img',
+//   name: 'B62qqL47z8LL1tALQEEqhpvDJrH8nV1NVTefvKUxqE7rdi6mmACmc8C',
+//   // name: zkAppAddressStr,
+//   ext: '.bmp'
+// });
+// const readStatus = await validateTicket(imgFilePath);
+// console.log(readStatus);
 
 // Create a public/private key pair.
 // Create an instance of Hush - and deploy it to zkAppAddress
-async function generateTicket() {
+export async function generateTicket() {
   const zkAppPrivateKey = PrivateKey.random();
   const zkAppAddress = zkAppPrivateKey.toPublicKey();
   let zkAppAddressStr = zkAppAddress.toBase58();
   console.log('PublicKey:', zkAppAddressStr);
-  // Generate QR code for zkAppAddress
   const zkAppInstance = new Hush(zkAppAddress);
   const deployTxn = await Mina.transaction(deployerAccount, async () => {
     // 1 Mina fee is required to create a new account for the zkApp
@@ -45,13 +44,19 @@ async function generateTicket() {
   const num0 = zkAppInstance.used.get();
   console.log('state after init:', num0.toString());
   await generateQRCode(zkAppAddress.toBase58(), zkAppAddressStr);
+  
+  // Return useful data that the API can send to the frontend
+  return {
+    publicKey: zkAppAddressStr,
+    privateKey: zkAppPrivateKey.toBase58()
+  };
 }
 
 // ----------------------------------------------------
 // Read QR code from the generated image
 // console.log('Reading addr from QR code');
 
-async function validateTicket(imgFilePath: string) {
+export async function validateTicket(imgFilePath: string) {
   let readAddress = await readQRCode(imgFilePath);
   if (readAddress != '') {
   try {
