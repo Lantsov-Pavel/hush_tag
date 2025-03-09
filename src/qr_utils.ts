@@ -27,20 +27,20 @@ export async function generateQRCode(address: string, zkAppAddressStr: string) {
 // Function to read string from QR code BMP image
 export async function readQRCode(filePath: string) {
     try {
-      console.log('Reading image from:', filePath);
+    //   console.log('Reading image from:', filePath);
       const imageBuffer = await sharp(filePath).raw().toBuffer({ resolveWithObject: true });
       const { data, info } = imageBuffer;
       const clampedArray = new Uint8ClampedArray(data.buffer);
       const code = jsQR(clampedArray, info.width, info.height);
       if (code) {
-        console.log('QR code value:', code.data);
+        // console.log('QR code value:', code.data);
         return code.data;
       } else {
         console.error('Failed to read QR code');
         return '';
       }
     } catch (err) {
-      console.error('Failed to read image:', err);
+    //   console.error('Failed to read image:', err);
       return '';
     }
-  }
+}
